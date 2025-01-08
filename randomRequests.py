@@ -3,6 +3,7 @@ import time
 import requests
 import socket
 import psutil
+import argparse
 from requests.adapters import HTTPAdapter
 from urllib3.poolmanager import PoolManager
 
@@ -52,33 +53,46 @@ def make_request(website, ip, interface_name):
 
 # Main function to parse the file, randomly select a website, and make requests
 def main():
-    websites_file = 'websites.txt'  # File containing the list of websites
-    interval = 10  # Time interval (in seconds) between each request
+    # Command-line argument parsing
+    parser = argparse.ArgumentParser(description='Send requests from a specified network interface')
+    parser.add_argument('interface', help='Network interface to bind requests to (e.g., eth0, wlan0)')
+    parser.add_argument('websites_file', help='File containing list of websites to request')
+    parser.add_argument('--interval', type=int, default=10, help='Time interval between requests in seconds')
 
-    # Load websites from the file
-    websites = load_websites(websites_file)
-    print(f"Loaded {len(websites)} websites.")
+    args = parser.parse_args()
 
     # Get the list of IP addresses and their associated interfaces
     ip_to_interface = get_local_ip_addresses()
-    if not ip_to_interface:
-        print("No valid IP addresses found on the system.")
+
+    if args.interface not in ip_to_interface.values():
+        print(f"Error: Interface {args.interface} not found on this system.")
         return
 
-    print(f"Available IP addresses: {ip_to_interface}")
+    # Filter IPs that belong to the specified interface
+    ip_addresses = [ip for ip, interface in ip_to_interface.items() if interface == args.interface]
+
+    if not ip_addresses:
+        print(f"No IP addresses found for the interface {args.interface}.")
+        return
+
+    print(f"Available IP addresses for {args.interface}: {ip_addresses}")
+
+    # Load websites from the file
+    websites = load_websites(args.websites_file)
+    print(f"Loaded {len(websites)} websites.")
 
     while True:
         # Randomly select a website
         website = random.choice(websites)
 
-        # Randomly select an IP address and its corresponding interface
-        ip, interface_name = random.choice(list(ip_to_interface.items()))
+        # Randomly select an IP address from the specified interface
+        random_ip = random.choice(ip_addresses)
 
         # Make the request from the selected IP address (via its network interface)
-        make_request(website, ip, interface_name)
+        make_request(website, random_ip, args.interface)
 
         # Wait for the specified interval
-        time.sleep(interval)
+        time.sleep(args.interval)
 
 # Start the program
 if __name__ == '__main__':
