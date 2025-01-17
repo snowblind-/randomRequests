@@ -6,6 +6,7 @@ import psutil
 import argparse
 from requests.adapters import HTTPAdapter
 from urllib3.poolmanager import PoolManager
+import urllib3
 
 # Function to read the list of websites from a file
 def load_websites(filename):
@@ -45,8 +46,12 @@ def make_request(website, ip, interface_name):
     session.mount('https://', adapter)
     session.mount('http://', adapter)
 
+    # Disable SSL certificate verification
+    requests.packages.urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
     try:
-        response = session.get(website, timeout=10)
+        # Make the request with SSL verification disabled
+        response = session.get(website, timeout=10, verify=False)
         print(f"Request to {website} from IP {ip} (interface {interface_name}) returned status: {response.status_code}")
     except requests.RequestException as e:
         print(f"Error making request to {website}: {e}")
