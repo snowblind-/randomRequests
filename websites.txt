@@ -77,7 +77,6 @@ https://www.about.com
 https://www.adultfriendfinder.com
 https://www.ameblo.jp
 https://www.mediafire.com
-https://www.megavideo.com
 https://www.google.co.id
 https://www.livedoor.com
 https://www.google.com.au
@@ -85,7 +84,6 @@ https://www.rediff.com
 https://www.livejournal.com
 https://www.google.ru
 https://www.kaixin001.com
-https://www.megaupload.com
 https://www.espn.go.com
 https://www.globo.com
 https://www.mixi.jp
