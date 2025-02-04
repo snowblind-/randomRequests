@@ -4,7 +4,9 @@ import requests
 import socket
 import psutil
 import argparse
+import urllib3
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Function to read the list of websites from a file
 def load_websites(filename):
