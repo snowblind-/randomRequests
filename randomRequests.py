@@ -8,6 +8,18 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# List of common User-Agent headers
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0",
+    "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
+    "Mozilla/5.0 (Windows NT 6.1; rv:40.0) Gecko/20100101 Firefox/40.0",
+    "Mozilla/5.0 (Linux; Android 9; Pixel 3 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 6.1; rv:42.0) Gecko/20100101 Firefox/42.0"
+]
+
 # Function to read the list of websites from a file
 def load_websites(filename):
     with open(filename, 'r') as file:
@@ -46,12 +58,19 @@ def session_for_src_addr(addr: str) -> requests.Session:
 
 # Function to make an HTTPS request from a specific IP address (via its network interface)
 def make_request(website, ip):
+    # Randomly select a User-Agent from the list
+    user_agent = random.choice(USER_AGENTS)
+    
+    # Set the User-Agent header for the session
+    headers = {
+        "User-Agent": user_agent
+    }
     # Create the session that binds to the given IP
     session = session_for_src_addr(ip)
     
     try:
         # Make the request from the selected IP address
-        response = session.get(website, timeout=10, verify=False)
+        response = session.get(website, timeout=10, headers=headers, verify=False)
         print(f"Request to {website} from IP {ip} returned status: {response.status_code}")
     except requests.RequestException as e:
         print(f"Error making request to {website}: {e}")
