@@ -45,13 +45,14 @@ def make_request(website, ip, interface_name):
     adapter = SourceIPAdapter(interface_name=interface_name)
     session.mount('https://', adapter)
     session.mount('http://', adapter)
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"}
 
     # Disable SSL certificate verification
     requests.packages.urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     try:
         # Make the request with SSL verification disabled
-        response = session.get(website, timeout=10, verify=False)
+        response = session.get(website, timeout=10, headers=headers, verify=False)
         print(f"Request to {website} from IP {ip} (interface {interface_name}) returned status: {response.status_code}")
     except requests.RequestException as e:
         print(f"Error making request to {website}: {e}")
